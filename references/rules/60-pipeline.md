@@ -12,7 +12,7 @@ oracle/nop → PR → validity check → **pass@2 at your timeout** → Automate
 (all Blocking Issues fixed) → **pass@5**.
 
 ```bash
-gh pr create --repo handshake-project-dynamo/<task-repo> --fill
+gh pr create --repo <program-org>/<task-repo> --fill
 ```
 
 Iterate by pushing to the **same branch** — checks re-run and sticky comments update
@@ -66,15 +66,15 @@ model failed, and that diagnosis should feed back into the task before submissio
 ## When checks fail on infrastructure
 
 A check that fails in seconds with an auth error (HTTP 401/403) against a central
-Handshake service is **not** a task defect and cannot be fixed by editing the task.
+the platform service is **not** a task defect and cannot be fixed by editing the task.
 Retriggering re-runs the same broken call. Close/reopen the PR fires a fresh run
 (`pull_request_target: reopened`); if the failure persists identically, escalate in
-Slack `#project-dynamo` with the check name, the endpoint, the run IDs and the
+Slack `#project-the program` with the check name, the endpoint, the run IDs and the
 number of reproductions. Do not keep retriggering — it adds noise to a graded PR
 without changing the outcome.
 
 ## Support
 
-Slack `#project-dynamo` / `dynamo-tasking` for task questions —
-*"ask before you start guessing."* `dynamo-announcements` for project notices.
-Support Desk in the Handshake AI dashboard for access, pay and admin.
+Slack `#project-the program` / `the program-tasking` for task questions —
+*"ask before you start guessing."* `the program announcements channel` for project notices.
+Support Desk in the the platform dashboard for access, pay and admin.

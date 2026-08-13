@@ -1,4 +1,4 @@
-# `dynamo-proposal-<hash>.md` — the platform artifact, and nothing else
+# `proposal-<hash>.md` — the platform artifact, and nothing else
 
 Copy this file, fill it in, delete these instruction blocks. **The finished file contains no
 instructions, no tables, no headings beyond the title, and no internal vocabulary.**

@@ -56,10 +56,10 @@ anything marked ✅ should never fail in CI, because you can prove it beforehand
 | # | Stage | What it gates | Locally checkable? |
 |---|---|---|---|
 | 1 | `changes` | Which paths changed; routes the rest of the graph | n/a |
-| 2 | `cosine_similarity` | **Your task vs already-DELIVERED Dynamo tasks.** Threshold **0.9** — blocks if *any* artifact scores ≥ 0.9. Reports per-artifact scores for **Instruction** and **Verifier** | ⚠️ Partly — you can diff your own drafts, but the delivered corpus is not visible to you |
+| 2 | `cosine_similarity` | **Your task vs already-DELIVERED benchmark tasks.** Threshold **0.9** — blocks if *any* artifact scores ≥ 0.9. Reports per-artifact scores for **Instruction** and **Verifier** | ⚠️ Partly — you can diff your own drafts, but the delivered corpus is not visible to you |
 | 3 | `review` | **The 31-criterion rubric**, plus static stage 1. The gate that blocks everything else | ✅ **Fully** — the rubric ships in your repo |
 | 4 | `similarity` | Your task vs the **TB2/TB3 benchmark** sets ("Duplicate check") | ✅ In practice never an issue — measured top lexical ~0.12 |
-| 5 | `validation` | Task structure and schema validity | ✅ `dynamo-preflight.py` |
+| 5 | `validation` | Task structure and schema validity | ✅ `preflight.py` |
 | 6 | `ratelimit` | Your remaining pass@2 quota | n/a — but see the economics below |
 | 7 | `pass2` | Two live agent trials at your disclosed timeout | ⚠️ Approximated by a local probe; only the platform is authoritative |
 | 8 | `pass2_suggestion` | Advisory; skips when not applicable | n/a |
@@ -127,7 +127,7 @@ roughly ≤0.25 s per instance so the disclosed per-item cap is ~100× and
 
 ## The ordered local pipeline — every step green before one push
 
-1. **Preflight.** `python dynamo-preflight.py <task>` (Python 3.11+). Then the three greps
+1. **Preflight.** `python preflight.py <task>` (Python 3.11+). Then the three greps
    above by hand — preflight's versions are laxer than the platform's.
 2. **Oracle and nop.** `harbor run -p . -a oracle -o <dir outside the repo>` → reward 1.0,
    then `-a nop` → 0.0. Output outside the repo, or job artifacts trip `no_extraneous_files`.
@@ -161,7 +161,7 @@ roughly ≤0.25 s per instance so the disclosed per-item cap is ~100× and
 ## The rubric self-grade — free, and the single highest-value pre-push step
 
 `harbor check` needs an API key. **You do not need one.** The full rubric ships in every task
-repo at `<your-task-repo>/references/dynamo-rubric.toml` (not in this skill) — roughly 41 KB, every criterion with a complete
+repo at `<your-task-repo>/dynamo-rubric.toml` (not in this skill) — roughly 41 KB, every criterion with a complete
 `description` *and* `guidance` block. Reading it and grading yourself costs nothing.
 
 Do it as an explicit **per-criterion table: PASS / FAIL / NA plus a one-line reason** — not a

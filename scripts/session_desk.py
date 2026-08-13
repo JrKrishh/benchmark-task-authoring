@@ -318,7 +318,7 @@ page = f"""<title>Claude Session Desk</title>
 <header><div class="hd">
   <h1>Claude Session Desk<span class="dot">_</span></h1>
   <span class="stamp">generated {now.strftime("%Y-%m-%d %H:%M:%S")} · auto-refreshes every 60s · regenerated on every Claude Code launch</span>
-  <a class="desklink" href="dynamo-taskdesk.html" title="Dynamo task desk — board state, PR labels, pass@5 outcomes">TASK DESK ↗</a>
+  <a class="desklink" href="taskdesk.html" title="benchmark task desk — board state, PR labels, pass@5 outcomes">TASK DESK ↗</a>
 </div></header>
 <div class="wrap">
   <div class="tiles">
@@ -412,7 +412,7 @@ render('today','');
 if(location.protocol!=='file:'){{
   const dl=document.querySelector('.desklink');
   dl.href='https://claude.ai/code/artifact/f163cc56-f5d7-48b8-be17-c0e319aa959d';
-  dl.title='Dynamo task desk (hosted)';
+  dl.title='benchmark task desk (hosted)';
   document.querySelector('.stamp').textContent+=' · hosted snapshot — local copy is freshest';
 }}
 </script>

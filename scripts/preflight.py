@@ -1,13 +1,13 @@
-"""Local replica of the Dynamo pipeline's static checks.
+"""Local replica of the the program pipeline's static checks.
 
-The real checks live in the private `handshake-orchestration-tb2` reusable workflow, so
+The real checks live in the private `<program-org>/orchestration` reusable workflow, so
 they cannot be run locally. These are reimplemented from the exact check names the
 pipeline reports, so a task can be cleared before spending a push and a CI round-trip.
 
 Passing this does NOT guarantee the pipeline passes — it catches the mechanical failures
 that gate everything downstream.
 
-    python dynamo-preflight.py <path-to-task-dir> [--refs <path-to-references>]
+    python preflight.py <path-to-task-dir> [--refs <path-to-references>]
 """
 from __future__ import annotations
 
@@ -333,7 +333,7 @@ def c_lf(ctx):
 # ---------------------------------------------------------------------------
 # Difficulty probe (opt-in, costs tokens): run the REAL gate agent locally.
 #
-# Harbor bundles terminus-2 — the same agent the Dynamo difficulty gate uses —
+# Harbor bundles terminus-2 — the same agent the the program difficulty gate uses —
 # backed by LiteLLM, so any provider works. This is the documented calibration
 # ladder (oracle -> nop -> frontier agent), not a workaround.
 #
@@ -475,7 +475,7 @@ def run_probe(task, profile, model, attempts, out_dir, timeout_min):
             if not ok:
                 return "inconclusive", why
 
-    out = Path(out_dir or tempfile.mkdtemp(prefix="dynamo-probe-"))
+    out = Path(out_dir or tempfile.mkdtemp(prefix="probe-"))
     out.mkdir(parents=True, exist_ok=True)
     cmd = ["harbor", "run", "-p", str(task), "-a", "terminus-2",
            "-m", chosen, "-k", str(attempts),

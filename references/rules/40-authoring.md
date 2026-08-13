@@ -1,6 +1,6 @@
 ---
 description: Instruction.md style rules, the 4-section proposal format, and rubric alignment. Load when reviewing or outlining the human-written prose artifacts. Auto-attaches to instruction and proposal files.
-globs: dynamo-*/task/instruction.md,dynamo-proposal-*.md
+globs: <task-repo>/task/instruction.md,proposal-*.md
 alwaysApply: false
 ---
 
@@ -33,7 +33,7 @@ colleague.
 
 ## The 4-section proposal
 
-House format — match an existing `dynamo-proposal-*.md`. Header line
+House format — match an existing `proposal-*.md`. Header line
 `Category: X Sub-Category: Y`, then:
 
 1. **Why this task is genuinely difficult.** Lead paragraphs describing the
@@ -56,7 +56,7 @@ it right and the build is derisked.
 
 ## Rubric alignment
 
-Grade any draft against `<task-repo>/references/dynamo-rubric.toml`. The criteria
+Grade any draft against `<task-repo>/dynamo-rubric.toml`. The criteria
 that most often bite:
 
 - `code_dependent` — the Pen & Paper test: not solvable conceptually in an

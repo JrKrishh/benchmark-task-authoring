@@ -1,4 +1,4 @@
-# dynamo-task-authoring
+# benchmark-task-authoring
 
 A Claude Code skill for writing Terminal-Bench 2 / Harbor benchmark tasks that survive the
 difficulty gate — and for getting them through review in **one** CI run instead of three.
@@ -11,13 +11,13 @@ platform's own measurement confirmed from what is still a hypothesis.
 
 ## Install
 
-Download **[`dynamo-task-authoring.skill`](dynamo-task-authoring.skill)** and click
+Download **[`benchmark-task-authoring.skill`](benchmark-task-authoring.skill)** and click
 **Save skill** when the file card appears in Claude.
 
 Or clone straight into your skills directory:
 
 ```bash
-git clone https://github.com/JrKrishh/dynamo-task-authoring.git ~/.claude/skills/dynamo-task-authoring
+git clone https://github.com/JrKrishh/benchmark-task-authoring.git ~/.claude/skills/benchmark-task-authoring
 ```
 
 After that it triggers on its own. You do not need to invoke it by name — saying things like
@@ -47,14 +47,14 @@ two failures was about difficulty at all.
 | `references/claiming.md` | How claiming actually works (route-based, not an API mutation) |
 | `references/rules/` | Eight phase-scoped rule files: mission, retrieval, hardness gate, design doctrine, Harbor format, authoring, verifier, pipeline |
 | `assets/` | The 4-section proposal house format, the one-slot-one-session prompt, the batch brief |
-| `scripts/dynamo-preflight.py` | Local gate check before you push (Python 3.11+) |
+| `scripts/preflight.py` | Local gate check before you push (Python 3.11+) |
 | `scripts/dr.py` | Local retrieval over this skill and your own notes |
 | `scripts/session_desk.py` | Dashboard over your Claude Code sessions |
 
 ## Quick wins
 
 **Free rubric self-grade.** All 31 review criteria ship in *your own task repo* at
-`references/dynamo-rubric.toml`, with full guidance text. No API key, no `harbor check`. Grade
+`dynamo-rubric.toml`, with full guidance text. No API key, no `harbor check`. Grade
 yourself as an explicit PASS/FAIL/NA table before every push — `review` gates everything
 downstream, and every rubric failure in this corpus landed in one of four graded prose fields.
 
@@ -67,7 +67,7 @@ python scripts/dr.py ask "what trips ava_review verifier_coverage" --fast
 ```
 
 Roughly 220 cards in under a second, lexical-only — no model download, no API key. Needs
-`numpy`. Point it at your own notes later with `DYNAMO_MEM` and `DYNAMO_WORK`.
+`numpy`. Point it at your own notes later with `BENCH_MEM` and `BENCH_WORK`.
 
 ## Scope and honesty
 
@@ -84,7 +84,7 @@ holds.** Open an issue — negative results are most of what this is built from.
 
 ## Requirements
 
-- **Python 3.11+** for `dynamo-preflight.py` (uses `tomllib`). On Windows where `python` is
+- **Python 3.11+** for `preflight.py` (uses `tomllib`). On Windows where `python` is
   older, run it as `py -3.12`.
 - **`numpy`** for `dr.py index`. `--fast` / `--no-embed` need nothing else.
 - **`gh` CLI**, authenticated, for the fork → PR flow.

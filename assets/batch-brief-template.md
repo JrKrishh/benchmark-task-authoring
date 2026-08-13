@@ -8,7 +8,7 @@ Copy below, fill the `<>` fields.
 
 ---
 
-# Dynamo batch — <N> slots claimed <DATE>
+# the program batch — <N> slots claimed <DATE>
 
 Shared brief. Every session in this batch reads this file first, then works ONLY its own slot.
 
@@ -20,7 +20,7 @@ Platform project id: `<PROJ>`  ·  Board: <board URL>
 |---|---|---|---|---|
 | 1 | `<hash>` | <Category> | **<Sub-category>** | <clear / ⚠️ COLLIDES with `<hash>`> |
 
-Repo URL pattern: `https://github.com/<ORG>/dynamo-<hash>-<category-slug>`
+Repo URL pattern: `https://github.com/<ORG>/<task-repo>`
 
 ### The similarity denominator
 

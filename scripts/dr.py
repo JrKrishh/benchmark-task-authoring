@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-dr.py - local retrieval + cache for the Dynamo task-authoring corpus.
+dr.py - local retrieval + cache for the benchmark task-authoring corpus.
 
 The corpus (~900 KB / ~228k tokens of memory files, proposals, rules and the
 program reference) does not fit in a context window, and re-reading whole
@@ -45,9 +45,9 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 CACHE = os.path.join(HERE, "cache")
 MODELS = os.path.join(HERE, "models")
 DB = os.path.join(CACHE, "index.sqlite")
-SKILL = os.path.abspath(os.path.join(HERE, ".."))        # the skill root (…/dynamo-task-authoring)
-HACK = os.environ.get("DYNAMO_WORK", SKILL)              # your working dir: proposals, design records
-MEM = os.environ.get("DYNAMO_MEM", "")                   # your own notes dir; empty until you have one
+SKILL = os.path.abspath(os.path.join(HERE, ".."))        # the skill root (…/benchmark-task-authoring)
+HACK = os.environ.get("BENCH_WORK", SKILL)              # your working dir: proposals, design records
+MEM = os.environ.get("BENCH_MEM", "")                   # your own notes dir; empty until you have one
 
 # Where the corpus lives, and how much each class is worth at retrieval time.
 # A measured law outranks the narrative that produced it.
@@ -56,7 +56,7 @@ MEM = os.environ.get("DYNAMO_MEM", "")                   # your own notes dir; e
 # fresh install with no notes of your own: index once and every query against the
 # field manual costs ~1-2k tokens instead of the ~35k a full read would.
 # The second block picks up your notes and working files as they accumulate —
-# set DYNAMO_MEM (notes) and DYNAMO_WORK (proposals/design records) to enable it.
+# set BENCH_MEM (notes) and BENCH_WORK (proposals/design records) to enable it.
 SOURCES = [
     # (glob-root, pattern, doc_class, weight)
     (os.path.join(SKILL, "references"), r"^hardness-laws\.md$", "law", 1.45),
@@ -70,15 +70,15 @@ if MEM:
         # Any note whose filename ends -law.md is treated as a distilled, transferable
         # law rather than the narrative that produced it, and ranked above war-chests.
         # Match order matters: this must precede the generic pattern below.
-        (MEM, r"^dynamo-.*-law\.md$", "law", 1.38),
-        (MEM, r"^dynamo-.*\.md$", "warchest", 1.00),
+        (MEM, r"^the program-.*-law\.md$", "law", 1.38),
+        (MEM, r"^the program-.*\.md$", "warchest", 1.00),
         (MEM, r"\.md$", "warchest", 0.95),
     ]
 if HACK != SKILL:
     SOURCES += [
-        (HACK, r"^dynamo-proposal-.*\.md$", "proposal", 0.85),
+        (HACK, r"^proposal-.*\.md$", "proposal", 0.85),
         (HACK, r"^design-.*\.md$", "case", 1.10),
-        (os.path.join(HACK, "dynamo-agent"), r"\.md$", "case", 1.10),
+        (os.path.join(HACK, "design-records"), r"\.md$", "case", 1.10),
     ]
 
 # Cards carrying these markers are laws, not narration.
@@ -499,7 +499,7 @@ class Index(object):
                     s *= 1.35          # verbatim phrase: the strongest signal there is
             fused[i] = s
 
-        # Saturation: the big summary file (project-dynamo-handshake) is close to
+        # Saturation: the big summary file (the program brief) is close to
         # every query and would otherwise fill every slot, burying the specific
         # war-chest that actually measured the thing. Each additional card from a
         # file it has already placed is discounted, so distinct sources surface.
@@ -589,7 +589,7 @@ def cmd_ask(a):
     t0 = time.time()
     ix = Index(c)
     hits = ix.search(q, k=max(a.k, 40), fast=a.fast, task=a.task, klass=a.klass)
-    hdr = "# dynamo-rag: %s\n# %d cards indexed; showing the slice that fits %d tokens." % (q, ix.N, a.budget)
+    hdr = "# scripts: %s\n# %d cards indexed; showing the slice that fits %d tokens." % (q, ix.N, a.budget)
     body, used, n = render(hits, a.budget, a.why, hdr)
     tail = "\n\n[%d cards | ~%d tokens | %.1fs | corpus ~%dk tokens]" % (
         n, used, time.time() - t0, sum(r[10] for r in ix.rows) // 1000)
@@ -612,7 +612,7 @@ BOOT_Q = [
 
 
 def cmd_boot(a):
-    """The fixed pack to load at session start instead of MEMORY.md + handshake."""
+    """The fixed pack to load at session start instead of MEMORY.md + the platform."""
     c = db()
     ver = mget(c, "version", "0")
     key = sha("BOOT|" + ver + "|" + SCORER + "|" + str(a.budget))
@@ -633,8 +633,8 @@ def cmd_boot(a):
             seen.add(h[1][1])
             chosen.append((h, int(b * scale)))
     out, used = [], 0
-    hdr = ("# DYNAMO BOOT PACK  (replaces reading MEMORY.md + project-dynamo-handshake.md)\n"
-           "# Ask for anything else with:  python dynamo-rag/dr.py ask \"<question>\"")
+    hdr = ("# BOOT PACK  (replaces reading MEMORY.md + the program brief)\n"
+           "# Ask for anything else with:  python scripts/dr.py ask \"<question>\"")
     out.append(hdr)
     used += toks(hdr)
     perq = defaultdict(int)
@@ -649,7 +649,7 @@ def cmd_boot(a):
         used += cost
         perq[gid] += 1
     txt = "\n\n".join(out) + "\n\n[boot pack: ~%d tokens vs ~%dk for the source files]" % (
-        used, (os.path.getsize(os.path.join(MEM, "project-dynamo-handshake.md"))
+        used, (os.path.getsize(os.path.join(MEM, "the program brief"))
                + os.path.getsize(os.path.join(MEM, "MEMORY.md"))) // 4000)
     c.execute("INSERT OR REPLACE INTO qcache VALUES(?,?,?,0)", (key, txt, time.time()))
     c.commit()
@@ -681,11 +681,11 @@ def cmd_laws(a):
     for r in kept:
         groups[r[4]].append(r)
     order = ["law", "rule", "case", "warchest", "reference", "proposal"]
-    lines = ["# DYNAMO LAW DECK",
+    lines = ["# LAW DECK",
              "",
              "Auto-distilled from %d cards across %d files by `dr.py laws`." % (ix.N, len(set(x[2] for x in ix.rows))),
              "Each card is kept only if no higher-salience card was >%.2f cosine to it." % a.dedup,
-             "Regenerate after any memory write:  `python dynamo-rag/dr.py laws --write`",
+             "Regenerate after any memory write:  `python scripts/dr.py laws --write`",
              ""]
     tot = 0
     for g in order + [k for k in groups if k not in order]:
@@ -759,7 +759,7 @@ def cmd_cache(a):
         srcs = [bool(a.value), bool(a.from_file), bool(a.stdin)]
         if sum(srcs) != 1:
             die("put needs exactly one of --stdin, --from-file or --value\n"
-                "  usual form:  python dynamo-preflight.py <task-dir> | "
+                "  usual form:  python preflight.py <task-dir> | "
                 "dr.py cache put preflight-<hash> --stdin --watch <task-dir>")
         if a.stdin:
             body = sys.stdin.read()

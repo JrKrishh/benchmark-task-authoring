@@ -1,6 +1,6 @@
 ---
-name: dynamo-task-authoring
-description: 'Design, red-team, ship and debug hard Terminal-Bench 2 / Harbor benchmark tasks: the measured laws for what makes agents actually fail, the kill-list of dead task shapes, and how to clear all 17 review stages in one push instead of three. Use for Project Dynamo slots, TB2/Harbor tasks, task.toml, instruction.md, task proposals, verifiers and sealed tests. Also use when any review stage fails or needs interpreting (ava_review, verifier_coverage, difficulty_explanation_quality, qc_gate, deep_review, cosine_similarity, validation, trials, pass2, pass5), when a task came back too easy or solved 2/2, or when CI keeps failing on something that is not difficulty. Trigger even if the user never says Dynamo: "make this task harder", "agents keep solving it", "difficulty gate", "my PR checks are failing", "rubric failed", "sealed tests", "adversarial benchmark task" all mean this skill applies.'
+name: benchmark-task-authoring
+description: 'Design, red-team, ship and debug hard Terminal-Bench 2 / Harbor benchmark tasks: the measured laws for what makes agents actually fail, the kill-list of dead task shapes, and how to clear all 17 review stages in one push instead of three. Use for the program slots, TB2/Harbor tasks, task.toml, instruction.md, task proposals, verifiers and sealed tests. Also use when any review stage fails or needs interpreting (ava_review, verifier_coverage, difficulty_explanation_quality, qc_gate, deep_review, cosine_similarity, validation, trials, pass2, pass5), when a task came back too easy or solved 2/2, or when CI keeps failing on something that is not difficulty. Trigger even if the user never says the program: "make this task harder", "agents keep solving it", "difficulty gate", "my PR checks are failing", "rubric failed", "sealed tests", "adversarial benchmark task" all mean this skill applies.'
 ---
 
 # Authoring hard agent-benchmark tasks
@@ -150,7 +150,7 @@ So the fastest route to a cleared slot is not a better task — it is **one push
 17 stages**. Three habits get you there:
 
 - **Run the free rubric self-grade before every push.** All 31 criteria ship in your own repo
-  at `<your-task-repo>/references/dynamo-rubric.toml` — **not** in this skill, with full guidance text. No API key needed. Grade
+  at `<your-task-repo>/dynamo-rubric.toml` — **not** in this skill, with full guidance text. No API key needed. Grade
   yourself as an explicit PASS/FAIL/NA table with a one-line reason per criterion — every
   rubric failure in this corpus landed in one of the four graded prose fields.
 - **Check the four blockers preflight does not catch** — they are listed with their fixes in
@@ -174,7 +174,7 @@ from the spec prose alone agrees with your reference; a three-way fuzz finds zer
 divergences; the reference runs well inside the disclosed cap. Every push re-rolls the
 LLM-graded stages, so a one-line fix costs the same wall-clock as a redesign.
 
-Then run `scripts/dynamo-preflight.py <task-dir>` (needs Python 3.11+; use `py -3.12` on
+Then run `scripts/preflight.py <task-dir>` (needs Python 3.11+; use `py -3.12` on
 Windows where `python` is older). It catches format and config failures that would otherwise
 burn a full CI cycle.
 
@@ -306,7 +306,7 @@ session starts, and make them binding.
 
 | Script | What it does | Notes |
 |---|---|---|
-| `scripts/dynamo-preflight.py` | Local gate check before pushing | Python 3.11+ (`tomllib`). `--probe` runs a live agent probe if configured. |
+| `scripts/preflight.py` | Local gate check before pushing | Python 3.11+ (`tomllib`). `--probe` runs a live agent probe if configured. |
 | `scripts/dr.py` | **Retrieval over this skill and your notes** — answers a design question in ~1–2k tokens instead of the ~35k a full read of the field manual costs | **Set this up first:** `python scripts/dr.py index --no-embed`, then `python scripts/dr.py ask "<question>" --fast`. Works immediately on the skill's own references — no notes, no API key, no model download. Needs `numpy`. → `references/retrieval.md` |
 | `scripts/session_desk.py` | Dashboard over your Claude Code sessions: live sessions, token spend, per-project activity | Writes `session-desk.html` beside itself. |
 

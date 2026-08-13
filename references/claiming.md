@@ -1,7 +1,7 @@
-# Claiming Handshake / Project Dynamo tasks programmatically
+# Claiming the platform / the program tasks programmatically
 
 A runbook for an agent operating a logged-in Chrome session on
-`ai.joinhandshake.com`. Everything below runs as page JavaScript in a tab that
+`ai.jointhe platform.com`. Everything below runs as page JavaScript in a tab that
 is already authenticated. No credentials are read, moved or stored - the browser
 attaches the session cookie itself.
 
@@ -34,7 +34,7 @@ BUILDER, not a mutation - which is what pointed at a URL rather than an API.
 
 Read it from your own tasks-page URL:
 
-    https://ai.joinhandshake.com/fellow/<ANNOTATION_PROJECT_ID>/tasks
+    https://ai.jointhe platform.com/fellow/<ANNOTATION_PROJECT_ID>/tasks
 
 Everything below calls that value `PROJ`. Do not copy someone else's.
 
@@ -322,7 +322,7 @@ failed; carries the backoff `retryIn`).
 ### Read this before you automate anything
 
 The program's own instructions (Project Instructions -> Workflow -> "1 · Claim
-a task", at `project-dynamo.learn.joinhandshake.com/workflow/step-1`) settle
+a task", at `the program's instructions site, step 1`) settle
 several questions this runbook previously answered by inference. Their wording,
 not ours:
 

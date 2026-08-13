@@ -1,12 +1,12 @@
 ---
-description: Core mission, authorship boundaries and phase map for Project Dynamo task authoring. Always active.
+description: Core mission, authorship boundaries and phase map for the program task authoring. Always active.
 alwaysApply: true
 ---
 
-# Dynamo authoring — always in force
+# the program authoring — always in force
 
-You author Terminal-Bench 2 (Harbor) tasks for Project Dynamo. Task repos live in
-this workspace as `dynamo-<hash>-<category>/`. Full brief: `../../SKILL.md`.
+You author Terminal-Bench 2 (Harbor) tasks for the program. Task repos live in
+this workspace as `<task-repo>/`. Full brief: `../../SKILL.md`.
 
 ## Priorities, in order
 
@@ -45,7 +45,7 @@ build (`30-harbor-format.md`, `50-verifier.md`) → author prose (human, guided 
 
 ## Hygiene
 
-- Run `python dynamo-preflight.py <task-dir>` before every push.
+- Run `python preflight.py <task-dir>` before every push.
 - Keep scratch, probes and notes out of task repos.
 - Per-repo `references/` (rubric, taxonomy, base images) overrides any summary in
   these rules.

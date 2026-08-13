@@ -1,6 +1,6 @@
 ---
 description: Harbor/TB2 mechanical format — file layout, task.toml schema, Dockerfile rules, base images, artifacts, timeouts, preflight and the leak check. Auto-attaches to task files; load when building or fixing task structure.
-globs: dynamo-*/task/**
+globs: <task-repo>/task/**
 alwaysApply: false
 ---
 
@@ -33,7 +33,7 @@ Canonical TB2 uses a **single image**. There is no `tests/Dockerfile` and
 
 - `artifacts = [...]` at **top level**, above the first `[section]`. Every
   agent-produced path the tests read must be declared.
-- `[task] name = "dynamo/<kebab-name>"` — inside the `[task]` table, `org/name`
+- `[task] name = "<program>/<kebab-name>"` — inside the `[task]` table, `org/name`
   format, name part ≤3 words. A root-level `task = "..."` string makes Harbor
   resolve zero tasks and abort.
 - `[metadata]`: `category`/`subcategory` are pre-seeded, do not edit.
@@ -63,7 +63,7 @@ Canonical TB2 uses a **single image**. There is no `tests/Dockerfile` and
 ## Before every push
 
 ```bash
-py -3 dynamo-preflight.py <task-dir> --refs <task-repo>/references
+py -3 preflight.py <task-dir> --refs <task-repo>/references
 ```
 
 Use `py -3` on this machine: the script needs `tomllib` (Python 3.11+) and the

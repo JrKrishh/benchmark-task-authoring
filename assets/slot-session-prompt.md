@@ -10,9 +10,9 @@ Copy the block below, fill the `<>` fields, paste as the opening message of a fr
 ---
 
 ```
-Draft the Dynamo task proposal for slot `<HASH>`.
+Draft the benchmark task proposal for slot `<HASH>`.
 
-- Repo: https://github.com/<ORG>/dynamo-<HASH>-<category-slug> (<N> PRs, claimed <DATE>)
+- Repo: https://github.com/<ORG>/the program-<HASH>-<category-slug> (<N> PRs, claimed <DATE>)
 - Category: <Category> · Sub-category: **<Sub-category>**
 
 FIRST: read `<PATH>/batch-brief.md` — it carries the batch-wide rules, the standing laws,
@@ -32,7 +32,7 @@ sub-category is magnetically attracted to violating, with the one-line test for 
 STOP AT THE PROPOSAL. No fork, no clone, no build, no push, no PR.
 
 Deliver TWO files:
-1. `dynamo-proposal-<HASH>.md` — platform artifact only, four-section house format,
+1. `proposal-<HASH>.md` — platform artifact only, four-section house format,
    dense prose, zero internal lore. Grep for banned tokens before handing over.
 2. `design-<HASH>-<slug>.md` — the design record: red-team table (3+ candidates with
    one-line post-mortems), kill-list clearance, disclosure ban list, pre-registered

@@ -39,14 +39,14 @@ lexical path answers most questions well and starts instantly.
 Two environment variables extend the corpus beyond the skill:
 
 ```bash
-export DYNAMO_MEM=/path/to/your/notes        # measured results, laws, war-chests
-export DYNAMO_WORK=/path/to/your/workspace   # proposals, design records
+export BENCH_MEM=/path/to/your/notes        # measured results, laws, war-chests
+export BENCH_WORK=/path/to/your/workspace   # proposals, design records
 python scripts/dr.py index                   # re-run after any write; incremental, ~1s
 ```
 
-`DYNAMO_MEM` picks up your `.md` notes, ranking any file named `*-law.md` above the rest — the
-assumption being that a distilled law outranks the narrative that produced it. `DYNAMO_WORK`
-picks up `dynamo-proposal-*.md` and `design-*.md` in your working directory.
+`BENCH_MEM` picks up your `.md` notes, ranking any file named `*-law.md` above the rest — the
+assumption being that a distilled law outranks the narrative that produced it. `BENCH_WORK`
+picks up `proposal-*.md` and `design-*.md` in your working directory.
 
 ## Useful flags
 

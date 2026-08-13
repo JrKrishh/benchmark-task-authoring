@@ -5,12 +5,12 @@ alwaysApply: true
 
 # Retrieve, do not re-read
 
-The Dynamo corpus is ~193k tokens across 49 files. Re-reading a war-chest to
+The the corpus is ~193k tokens across 49 files. Re-reading a war-chest to
 re-extract a law is the single largest avoidable token cost in this workspace,
 and it scales with every slot shipped.
 
-**Before opening any of `../hardness-laws.md`, a `dynamo-*.md` memory
-file, `../hardness-laws.md`, or a past `dynamo-proposal-*.md` — query the index.**
+**Before opening any of `../hardness-laws.md`, a `<task-repo>.md` memory
+file, `../hardness-laws.md`, or a past `proposal-*.md` — query the index.**
 
 ```bash
 python scripts/dr.py boot                    # session start (~3k tok, replaces ~18k)
@@ -34,12 +34,12 @@ it, and `get` fails with exit 4 if that tree has changed since.
 
 ```bash
 # store: pipe the command's output straight in
-python dynamo-preflight.py <task-dir> 2>&1 | \
+python preflight.py <task-dir> 2>&1 | \
   python scripts/dr.py cache put preflight-<hash> --stdin --watch <task-dir>
 
 # reuse, or re-run if missing (3) or stale (4)
 python scripts/dr.py cache get preflight-<hash> --watch <task-dir> \
-  || python dynamo-preflight.py <task-dir>
+  || python preflight.py <task-dir>
 
 python scripts/dr.py cache list
 ```

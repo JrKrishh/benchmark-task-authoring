@@ -1,6 +1,6 @@
 ---
 description: Verifier design — ground-truth protection, tolerance justification, anti-cheat, AVA, and the 11-item pre-submission self-check. Auto-attaches to test files; load when writing or auditing a verifier.
-globs: dynamo-*/task/tests/**
+globs: <task-repo>/task/tests/**
 alwaysApply: false
 ---
 
