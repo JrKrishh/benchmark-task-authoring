@@ -225,7 +225,8 @@ proj_bars = "".join(
     f'<span class="val">{v["n"]}</span></div>'
     for k, v in top_proj)
 
-page = f"""<title>Claude Session Desk</title>
+page = f"""<meta charset="utf-8">
+<title>Claude Session Desk</title>
 <meta http-equiv="refresh" content="60">
 <style>
   :root{{

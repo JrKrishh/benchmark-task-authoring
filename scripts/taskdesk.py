@@ -217,7 +217,8 @@ def render(rows, org, skill_url, sessiondesk):
             '<div class="why">%s</div><div class="stages">%s</div></div>'
             % (e(r["repo"]), chip[0], chip[1], labels, pr, r["why"], st))
 
-    return """<title>Task Desk</title>
+    return """<meta charset="utf-8">
+<title>Task Desk</title>
 <meta http-equiv="refresh" content="600">
 <style>%s</style>
 <header><div class="hd">
