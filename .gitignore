@@ -1,0 +1,6 @@
+scripts/cache/
+scripts/models/
+__pycache__/
+*.pyc
+.session-desk-cache.json
+session-desk.html

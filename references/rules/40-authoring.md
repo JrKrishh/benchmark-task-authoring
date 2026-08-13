@@ -1,0 +1,87 @@
+---
+description: Instruction.md style rules, the 4-section proposal format, and rubric alignment. Load when reviewing or outlining the human-written prose artifacts. Auto-attaches to instruction and proposal files.
+globs: dynamo-*/task/instruction.md,dynamo-proposal-*.md
+alwaysApply: false
+---
+
+# Authoring the prose artifacts
+
+**These are human-written** (see `00-mission.md`). Your role is outline, critique
+and red-team — never composition. What follows is the standard to critique against.
+
+## instruction.md
+
+It is a prompt, not a document. Written as a domain expert briefing a skilled
+colleague.
+
+- **≤1500 tokens.** No title, no section headers, no preamble, no roleplay.
+- **Absolute paths in backticks** — `` `/app/data.csv` ``, never `data.csv`.
+- Name **every** expected output file and its exact format.
+- Describe the **what**, never the how. No step-by-step procedure, no mandated
+  tools or libraries ("use scipy.optimize" is a defect). Overspecification is the
+  single most common way a task stops being hard.
+- Do not list available tools, libraries or environment details that are not direct
+  inputs — the agent should discover them.
+- Do not spell out prerequisite knowledge that experts agree on unanimously.
+  Field-standard definitions and formulae may be assumed.
+- Structured output ⇒ the **exact schema is normative** and stated. Examples alone
+  are not sufficient.
+- Disclose only what is genuinely non-standard, dataset-specific or arbitrary and
+  which the agent must match: an output schema, a tolerance, a rounding rule, a
+  pick among equally standard conventions.
+- LLM-flavoured prose is a rubric red flag in itself.
+
+## The 4-section proposal
+
+House format — match an existing `dynamo-proposal-*.md`. Header line
+`Category: X Sub-Category: Y`, then:
+
+1. **Why this task is genuinely difficult.** Lead paragraphs describing the
+   problem, then italic-led paragraphs: *The professional and why it is valuable.*
+   (name who is actually paid to do this), *The data.* (synthetic or real,
+   provenance, whether realistically challenging), *The pitfalls.* (the concrete
+   traps, and why difficulty is reasoning rather than tedium).
+2. **Intended solution approach.** The key insight first, then numbered steps from
+   priors to answer, then expert effort in hours. Another domain expert should be
+   able to reimplement from this alone.
+3. **How the solution will be verified.** What is checked and how; why exactness or
+   each tolerance is calibrated as it is; anti-cheat; what discriminates a correct
+   solver from the plausible wrong one; cross-validation against an independent
+   implementation.
+4. **Category and sub-category.** Justify the labels against what the task actually
+   asks the agent to do and produce.
+
+Dense prose, no fluff. The proposal is an automated gate **before** the build — get
+it right and the build is derisked.
+
+## Rubric alignment
+
+Grade any draft against `<task-repo>/references/dynamo-rubric.toml`. The criteria
+that most often bite:
+
+- `code_dependent` — the Pen & Paper test: not solvable conceptually in an
+  afternoon; must require genuine multi-step environment interaction.
+- `essential_difficulty` — expert reasoning, not tedium, obscure recall, arbitrary
+  precision or clerical volume.
+- `outcome_verified` — grades the end state; the instruction must not hand over the
+  method.
+- `unambiguous` — defaults to PASS; the defect is *blocking* ambiguity. To fail it
+  you must name a specific sound approach that would clearly fail verification.
+- `instruction_concision` — human-written, absolute paths, no hints, no tool lists.
+- `difficulty_explanation_quality` — must convey core difficulty for both
+  audiences, required expertise, traps, **data provenance** and **real-world
+  relevance**. Never cite pass rates or model results; describe intrinsic
+  difficulty.
+- `solution_explanation_quality` — enough for another expert to reimplement, and
+  congruent with the actual solution files.
+- `verification_explanation_quality` — what each test checks, and the calibration of
+  every tolerance.
+
+## Instruction defects that recur
+
+Two rules that cannot both hold on the shipped fixtures; underspecified methodology
+*where the choice changes the graded answer*; fields named but never defined; the
+verifier enforcing a string, field or schema appearing nowhere in the instruction;
+an unspecified format the verifier hardcodes; several valid computations with no
+tie-break; undescribed edge cases; spec wording contradicting intent ("first match
+wins" where the reference keeps the last).
