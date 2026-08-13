@@ -318,7 +318,8 @@ page = f"""<title>Claude Session Desk</title>
 <header><div class="hd">
   <h1>Claude Session Desk<span class="dot">_</span></h1>
   <span class="stamp">generated {now.strftime("%Y-%m-%d %H:%M:%S")} · auto-refreshes every 60s · regenerated on every Claude Code launch</span>
-  <a class="desklink" href="taskdesk.html" title="benchmark task desk — board state, PR labels, pass@5 outcomes">TASK DESK ↗</a>
+  <a class="desklink" id="taskdesk" href="taskdesk.html" title="Task desk — per-slot review stage and what each needs">TASK DESK ↗</a>
+  <a class="desklink" href="https://github.com/JrKrishh/benchmark-task-authoring" target="_blank" rel="noopener" title="benchmark-task-authoring — hardness laws, the 17-stage CI map, local retrieval">SKILL ↗</a>
 </div></header>
 <div class="wrap">
   <div class="tiles">
@@ -410,9 +411,9 @@ document.getElementById('q').addEventListener('input',e=>render(curF,e.target.va
 render('today','');
 // dual-context link: local file when viewed locally, sibling artifact when hosted
 if(location.protocol!=='file:'){{
-  const dl=document.querySelector('.desklink');
+  const dl=document.getElementById('taskdesk');
   dl.href='https://claude.ai/code/artifact/f163cc56-f5d7-48b8-be17-c0e319aa959d';
-  dl.title='benchmark task desk (hosted)';
+  dl.title='Task desk (hosted)';
   document.querySelector('.stamp').textContent+=' · hosted snapshot — local copy is freshest';
 }}
 </script>

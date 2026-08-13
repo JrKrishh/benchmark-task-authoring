@@ -10,6 +10,36 @@ cleared a difficulty gate, and the many that died first. It exists because the i
 almost everyone brings to "write a hard task" is wrong in a specific, repeatable way, and
 the correction is cheap once you know it.
 
+## New here? Fifteen minutes, in this order
+
+**1 · Read "The one law" and the kill-list below (5 min).** Do not skip to the reference
+files. If you internalise only one thing, make it the pre-build test: *what must the agent
+build that the verifier could not hand it by simulating?*
+
+**2 · Set up retrieval (1 min).** The field manual is ~35k tokens and will not fit in one
+read call. Index it once and query it instead — this is the difference between a design
+question costing ~1k tokens and ~35k:
+
+```bash
+python scripts/dr.py index --no-embed
+python scripts/dr.py ask "what trips ava_review verifier_coverage" --fast
+```
+
+**3 · Put a board up (1 min).** Before you write anything, see where your slots actually
+stand — and specifically which review stage each one is sitting at:
+
+```bash
+python scripts/taskdesk.py --org <your-task-org>
+```
+
+**4 · Then, when you have a slot to work:** `references/ci-stages.md` before your first push
+(it is the difference between one three-hour CI run and three of them), and the phase table
+below for everything else.
+
+**The two mistakes that cost the most, stated once so you can avoid both:** designing a task
+where the agent *checks* a property instead of *constructing* an object, and treating CI as a
+test loop instead of a confirmation step.
+
 ## The one law
 
 **The gate does not measure how hard your task was to build. It measures whether strong
@@ -308,7 +338,26 @@ session starts, and make them binding.
 |---|---|---|
 | `scripts/preflight.py` | Local gate check before pushing | Python 3.11+ (`tomllib`). `--probe` runs a live agent probe if configured. |
 | `scripts/dr.py` | **Retrieval over this skill and your notes** — answers a design question in ~1–2k tokens instead of the ~35k a full read of the field manual costs | **Set this up first:** `python scripts/dr.py index --no-embed`, then `python scripts/dr.py ask "<question>" --fast`. Works immediately on the skill's own references — no notes, no API key, no model download. Needs `numpy`. → `references/retrieval.md` |
-| `scripts/session_desk.py` | Dashboard over your Claude Code sessions: live sessions, token spend, per-project activity | Writes `session-desk.html` beside itself. |
+| `scripts/taskdesk.py` | **Board dashboard** — sweeps your task org and shows, per slot, which review stage it is sitting at and what it needs from you | `python scripts/taskdesk.py --org <your-org>` (or set `BENCH_ORG`). Needs `gh` authenticated. Read-only — it never pushes. |
+| `scripts/session_desk.py` | Dashboard over your Claude Code sessions: live sessions, token spend, per-project activity | `python scripts/session_desk.py`. Writes `session-desk.html` beside itself. |
+
+### The two desks
+
+They answer different questions and cross-link to each other and back to this skill.
+
+**Task desk** (`taskdesk.py`) — *where does the work stand?* One card per slot with a
+stage-by-stage strip: green for passed, red for the stage that blocked you, amber for what is
+running. Because an early block skips everything downstream, knowing you stopped at `review`
+rather than at `trials` tells you immediately whether you are five minutes or a redesign away.
+It sorts blocked slots first, and its action band names the fix for each.
+
+**Session desk** (`session_desk.py`) — *what is this costing?* Live sessions, token spend by
+day and by project, and a searchable ledger of past sessions. Useful when you are running
+several slots in parallel and want to see where the budget actually went.
+
+Both re-render in about a second (the task desk takes ~30 s the first time because it queries
+`gh` per PR). Neither needs a server — open the HTML file directly. To keep the session desk
+current automatically, run it from a `SessionStart` hook.
 
 ## Honest limits
 

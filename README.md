@@ -49,7 +49,27 @@ two failures was about difficulty at all.
 | `assets/` | The 4-section proposal house format, the one-slot-one-session prompt, the batch brief |
 | `scripts/preflight.py` | Local gate check before you push (Python 3.11+) |
 | `scripts/dr.py` | Local retrieval over this skill and your own notes |
-| `scripts/session_desk.py` | Dashboard over your Claude Code sessions |
+| `scripts/taskdesk.py` | **Board dashboard** — per slot, which review stage it is sitting at |
+| `scripts/session_desk.py` | Dashboard over your Claude Code sessions and token spend |
+
+## The two desks
+
+```bash
+python scripts/taskdesk.py --org <your-task-org>   # board state, stage by stage
+python scripts/session_desk.py                     # sessions and token spend
+```
+
+**Task desk** answers *where does the work stand?* — one card per slot with a stage strip:
+green for passed, red for the stage that blocked you, amber for what is running. Since an
+early block skips everything downstream, seeing that you stopped at `review` rather than
+`trials` tells you immediately whether you are five minutes or a redesign away. Blocked slots
+sort first and the action band names each fix. Read-only; it never pushes.
+
+**Session desk** answers *what is this costing?* — live sessions, token spend by day and
+project, and a searchable ledger.
+
+Both are plain HTML files that open without a server, and they cross-link to each other and
+back to this repo.
 
 ## Quick wins
 
