@@ -438,7 +438,7 @@ page = f"""<meta charset="utf-8">
   <h1>Claude Session Desk<span class="dot">_</span></h1>
   <span class="stamp">generated {now.strftime("%Y-%m-%d %H:%M:%S")} · auto-refreshes every 60s · regenerated on every Claude Code launch</span>
   <a class="desklink" id="taskdesk" href="taskdesk.html" title="Task desk — per-slot review stage and what each needs">TASK DESK ↗</a>
-  <a class="desklink" href="https://github.com/JrKrishh/benchmark-task-authoring" target="_blank" rel="noopener" title="benchmark-task-authoring — hardness laws, the 17-stage CI map, local retrieval">SKILL ↗</a>
+  <a class="desklink" href="https://github.com/Xclaw-bot/benchmark-task-authoring" target="_blank" rel="noopener" title="benchmark-task-authoring — hardness laws, the 17-stage CI map, local retrieval">SKILL ↗</a>
 </div></header>
 <div class="wrap">
   <div class="tiles">

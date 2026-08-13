@@ -46,7 +46,7 @@ Clone into your workspace. Antigravity reads **`.agents/rules/*.md`** as workspa
 </table>
 
 ```bash
-git clone https://github.com/JrKrishh/benchmark-task-authoring.git
+git clone https://github.com/Xclaw-bot/benchmark-task-authoring.git
 ```
 
 **You never invoke it by name.** It fires on its own the moment you say something it
@@ -211,7 +211,7 @@ Weight them accordingly. Your sub-category distribution will differ from mine, s
 category-specific notes may not transfer even where the cross-cutting laws do.
 
 **If a law turns out wrong in your categories, that is more valuable than one that holds** —
-[open an issue](https://github.com/JrKrishh/benchmark-task-authoring/issues). Negative results
+[open an issue](https://github.com/Xclaw-bot/benchmark-task-authoring/issues). Negative results
 are most of what this is built from.
 
 ---

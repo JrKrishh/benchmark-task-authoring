@@ -269,7 +269,7 @@ def main():
     ap.add_argument("--org", default=os.environ.get("BENCH_ORG"),
                     help="GitHub org holding your task repos (or set BENCH_ORG)")
     ap.add_argument("--out", default=os.path.join(os.path.dirname(os.path.abspath(__file__)), "taskdesk.html"))
-    ap.add_argument("--skill-url", default="https://github.com/JrKrishh/benchmark-task-authoring")
+    ap.add_argument("--skill-url", default="https://github.com/Xclaw-bot/benchmark-task-authoring")
     ap.add_argument("--session-desk", default="session-desk.html")
     ap.add_argument("--watch", nargs="?", type=int, const=600, metavar="SECONDS",
                     help="rebuild on a loop (default 600s). The page's meta-refresh only "
