@@ -16,23 +16,59 @@
 
 ## Install
 
-**One click.** Download **[`benchmark-task-authoring.skill`](benchmark-task-authoring.skill)**
-→ open it in Claude → press **Save skill**. Done.
+Works in **Claude Code**, **Codex**, **Cursor**, and **Antigravity** — same knowledge, each
+tool's own convention. Pick your row.
 
-<details>
-<summary><b>Or clone it</b> (same thing, if you prefer git)</summary>
+<table>
+<tr><th align="left">Claude&nbsp;Code</th><td>
+
+Download **[`benchmark-task-authoring.skill`](benchmark-task-authoring.skill)** → open it in
+Claude → press **Save skill**.
+<sub>Or: `git clone … ~/.claude/skills/benchmark-task-authoring`</sub>
+</td></tr>
+<tr><th align="left">Codex</th><td>
+
+Clone anywhere in your project and Codex reads **`AGENTS.md`** automatically.
+<sub>Already at the repo root — nothing to configure.</sub>
+</td></tr>
+<tr><th align="left">Cursor</th><td>
+
+Clone into your project. Cursor picks up **`.cursor/rules/*.mdc`** automatically, including
+glob auto-attach — the Harbor-format rule activates on `**/task/**`, the verifier rule on
+`**/task/tests/**`, and so on.
+</td></tr>
+<tr><th align="left">Antigravity</th><td>
+
+Clone into your workspace. Antigravity reads **`.agents/rules/*.md`** as workspace rules, and
+**`AGENTS.md`** as the project entry point.
+<sub>For global rules instead, copy `AGENTS.md` to `~/.gemini/GEMINI.md`.</sub>
+</td></tr>
+</table>
 
 ```bash
-git clone https://github.com/JrKrishh/benchmark-task-authoring.git \
-  ~/.claude/skills/benchmark-task-authoring
+git clone https://github.com/JrKrishh/benchmark-task-authoring.git
 ```
-</details>
 
 **You never invoke it by name.** It fires on its own the moment you say something it
 recognises:
 
 > *"agents keep solving my task"* · *"my PR checks are failing"* ·
 > *"how do I make this harder"* · *"pass@5 came back 3/5"* · *"ava_review failed"*
+
+<details>
+<summary><b>How the four stay in sync</b></summary>
+
+`SKILL.md` and `references/` are the single source of truth. `AGENTS.md`,
+`.cursor/rules/*.mdc` and `.agents/rules/*.md` are **generated**:
+
+```bash
+python scripts/port.py           # regenerate every entry point
+python scripts/port.py --check   # exit 1 if any is stale — good in CI
+```
+
+Four hand-maintained copies drift, and a stale rule file is worse than no rule file. Edit the
+sources, re-run `port.py`.
+</details>
 
 ---
 
@@ -100,7 +136,8 @@ Both are plain HTML — no server, no build. They cross-link to each other and b
 
 | Path | What it is |
 |---|---|
-| **`SKILL.md`** | The one law, the 13-shape kill-list, the workflow, routing to everything else |
+| **`SKILL.md`** | The one law, the 13-shape kill-list, the workflow, routing to everything else — **the source of truth** |
+| `AGENTS.md` · `.cursor/rules/` · `.agents/rules/` | Generated entry points for Codex, Cursor and Antigravity (`scripts/port.py`) |
 | **`references/hardness-laws.md`** | The field manual — every law with its numbers and evidence class |
 | **`references/ci-stages.md`** | All 17 review stages, the four blockers preflight misses, the ordered local pipeline |
 | `references/retrieval.md` | Index once, query for ~1k tokens instead of ~35k |
@@ -111,6 +148,7 @@ Both are plain HTML — no server, no build. They cross-link to each other and b
 | `scripts/dr.py` | Local retrieval over this skill and your own notes |
 | `scripts/taskdesk.py` | Board dashboard — per slot, which stage it is sitting at |
 | `scripts/session_desk.py` | Session and token-spend dashboard |
+| `scripts/port.py` | Regenerates the Codex / Cursor / Antigravity entry points from the sources |
 
 ---
 
