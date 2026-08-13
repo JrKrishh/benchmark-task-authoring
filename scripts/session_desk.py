@@ -1,13 +1,23 @@
 #!/usr/bin/env python3
-"""Session Desk — one-file dashboard over every Claude Code session on this machine.
+"""Session Desk — one dashboard over your agent sessions across tools.
 
-Scans  C:/Users/<me>/.claude/projects/*/*.jsonl  (all projects, all sessions),
-caches per-file stats keyed on (mtime,size), detects LIVE sessions via the pid
-lock files in ~/.claude/sessions/, and writes session-desk.html next to itself.
+Sources, and why only these two:
+    Claude Code  ~/.claude/projects/*/*.jsonl   full transcripts + per-message usage
+    Codex        ~/.codex/sessions/**/*.jsonl   rollout files + running token totals
+Cursor and Antigravity are deliberately absent — Cursor's workspaceStorage holds UI
+state with no token accounting, and Antigravity stores protobuf. Neither exposes a
+transcript that could be reported honestly, so this does not guess at one.
+
+Caches per-file stats keyed on (mtime,size); detects LIVE sessions via the pid lock
+files in ~/.claude/sessions/; writes session-desk.html next to itself.
 
 Modes:
-    python session_desk.py            # build, print a one-line summary
-    python session_desk.py --hook     # silent, debounced (for the SessionStart hook)
+    python session_desk.py             # build once, print a one-line summary
+    python session_desk.py --watch 60  # rebuild every 60s (see below)
+    python session_desk.py --hook      # silent, debounced (for a SessionStart hook)
+
+The page carries a meta-refresh, but that only re-reads the file — it does not
+regenerate it. Use --watch (or the hook) if you want the numbers to actually move.
 """
 import ctypes, html, json, os, re, sys, time
 from datetime import datetime, timedelta
@@ -23,6 +33,22 @@ DEBOUNCE  = 60  # --hook: skip rebuild if html is fresher than this many seconds
 HOOK = "--hook" in sys.argv
 if HOOK and os.path.exists(OUT_HTML) and time.time() - os.path.getmtime(OUT_HTML) < DEBOUNCE:
     sys.exit(0)
+
+# ---------- watch mode -----------------------------------------------------
+# The page carries a meta-refresh, but that only re-reads the file on disk — it does
+# NOT regenerate it. Without something rebuilding the file, the refresh shows the same
+# numbers forever. This loop is that something.
+if "--watch" in sys.argv:
+    import subprocess
+    argv = [a for a in sys.argv[1:] if a != "--watch" and not a.isdigit()]
+    every = next((int(a) for a in sys.argv[1:] if a.isdigit()), 60)
+    print("watching: rebuilding every %ds — Ctrl-C to stop" % every)
+    try:
+        while True:
+            subprocess.run([sys.executable, os.path.abspath(__file__)] + argv)
+            time.sleep(every)
+    except KeyboardInterrupt:
+        sys.exit(0)
 
 # ---------- live pids ----------------------------------------------------
 def pid_alive(pid):
@@ -91,6 +117,60 @@ def parse_jsonl(path):
                 s["title"] = o.get("aiTitle") or o.get("customTitle") or s["title"]
     return s
 
+def parse_codex_jsonl(path):
+    """Codex rollout files: ~/.codex/sessions/YYYY/MM/DD/rollout-*.jsonl.
+
+    Different shape from Claude's transcripts — one `session_meta` header, then
+    events. Token usage arrives as a running TOTAL in `payload.info.total_token_usage`,
+    so the last one wins rather than summing per message.
+    """
+    s = dict(first=None, last=None, user=0, asst=0, tools=0,
+             tok_in=0, tok_out=0, tok_cr=0, tok_cc=0,
+             title=None, cwd=None, models={})
+    with open(path, encoding="utf-8", errors="replace") as f:
+        for line in f:
+            try:
+                o = json.loads(line)
+            except Exception:
+                continue
+            ts = o.get("timestamp")
+            if ts:
+                if s["first"] is None:
+                    s["first"] = ts
+                s["last"] = ts
+            p = o.get("payload") or {}
+            if not isinstance(p, dict):
+                continue
+            t = o.get("type")
+            if t == "session_meta":
+                s["cwd"] = p.get("cwd") or s["cwd"]
+                mdl = p.get("model") or p.get("model_provider")
+                if mdl:
+                    s["models"][str(mdl)] = s["models"].get(str(mdl), 0) + 1
+            elif t == "response_item":
+                role = (p.get("role") or "").lower()
+                if role == "user":
+                    s["user"] += 1
+                elif role == "assistant":
+                    s["asst"] += 1
+                if p.get("type") in ("function_call", "local_shell_call", "custom_tool_call"):
+                    s["tools"] += 1
+            info = p.get("info")
+            if isinstance(info, dict):
+                tot = info.get("total_token_usage")
+                if isinstance(tot, dict):          # running total: overwrite, never add
+                    s["tok_in"] = tot.get("input_tokens", 0) or 0
+                    s["tok_out"] = tot.get("output_tokens", 0) or 0
+                    s["tok_cr"] = tot.get("cached_input_tokens", 0) or 0
+                    s["tok_cc"] = tot.get("cache_write_input_tokens", 0) or 0
+            if s["title"] is None:
+                for k in ("title", "summary"):
+                    if isinstance(p.get(k), str) and p[k].strip():
+                        s["title"] = p[k].strip()[:110]
+                        break
+    return s
+
+
 sessions = []
 seen_keys = set()
 if os.path.isdir(PROJECTS):
@@ -118,7 +198,38 @@ if os.path.isdir(PROJECTS):
                 cache[key] = {"mtime": st.st_mtime, "size": st.st_size, "stats": s}
             sid = fn[:-6]
             sessions.append(dict(s, sid=sid, projdir=proj, size=st.st_size,
-                                 mtime=st.st_mtime, live=sid in live))
+                                 mtime=st.st_mtime, live=sid in live, src="claude"))
+
+# ---------- Codex sessions -------------------------------------------------
+# Cursor and Antigravity are deliberately absent: Cursor's workspaceStorage holds UI
+# state with no token accounting, and Antigravity stores protobuf. Neither exposes a
+# transcript we could report honestly, so we do not guess at one.
+CODEX = os.path.join(os.environ.get("USERPROFILE", os.path.expanduser("~")), ".codex", "sessions")
+if os.path.isdir(CODEX):
+    for root, _dirs, files in os.walk(CODEX):
+        for fn in files:
+            if not fn.endswith(".jsonl"):
+                continue
+            path = os.path.join(root, fn)
+            try:
+                st = os.stat(path)
+            except OSError:
+                continue
+            if st.st_size < 200:
+                continue
+            seen_keys.add(path)
+            c = cache.get(path)
+            if c and c["mtime"] == st.st_mtime and c["size"] == st.st_size:
+                s = c["stats"]
+            else:
+                try:
+                    s = parse_codex_jsonl(path)
+                except Exception:
+                    continue
+                cache[path] = {"mtime": st.st_mtime, "size": st.st_size, "stats": s}
+            sid = fn[:-6]
+            sessions.append(dict(s, sid=sid, projdir="codex", size=st.st_size,
+                                 mtime=st.st_mtime, live=False, src="codex"))
 
 cache = {k: v for k, v in cache.items() if k in seen_keys}
 with open(CACHE_F, "w", encoding="utf-8") as f:
@@ -157,7 +268,7 @@ for s in sessions:
         sid=s["sid"], proj=projname(s), title=s["title"] or "(untitled)",
         start=a, end=b, dur=dur, user=s["user"], asst=s["asst"], tools=s["tools"],
         tin=s["tok_in"], tout=s["tok_out"], tcr=s["tok_cr"], tcc=s["tok_cc"],
-        model=short_model(s["models"]), live=s["live"]))
+        model=short_model(s["models"]), live=s["live"], src=s.get("src","claude")))
 rows.sort(key=lambda r: r["end"], reverse=True)
 
 n_live  = sum(r["live"] for r in rows)
@@ -203,7 +314,7 @@ LEDGER = [dict(
     start=r["start"].strftime("%d %b %H:%M"), dur=fmt_dur(r["dur"]),
     msgs=f'{r["user"]}/{r["asst"]}', tools=r["tools"],
     tout=fmt_tok(r["tout"]), ttot=fmt_tok(r["tin"] + r["tcr"] + r["tcc"] + r["tout"]),
-    model=esc(r["model"]), live=r["live"],
+    model=esc(r["model"]), live=r["live"], src=esc(r.get("src","claude")),
     today=r["start"] >= today0, week=r["start"] >= week0,
 ) for r in rows[:400]]
 
@@ -383,7 +494,7 @@ page = f"""<meta charset="utf-8">
   </div>
   <div class="tablewrap"><table id="ledger">
     <thead><tr><th>Session</th><th>Project</th><th>Title</th><th>Started</th><th>Span</th>
-    <th>Msgs u/a</th><th>Tools</th><th>Tok out</th><th>Tok total</th><th>Model</th></tr></thead>
+    <th>Src</th><th>Msgs u/a</th><th>Tools</th><th>Tok out</th><th>Tok total</th><th>Model</th></tr></thead>
     <tbody></tbody>
   </table></div>
 </div>
@@ -402,7 +513,7 @@ function render(f,q){{
     tr.innerHTML=`<td class="mono">${{r.live?'<span class="chip g">LIVE</span> ':''}}${{r.sid}}</td>
       <td class="mono">${{r.proj}}</td><td>${{r.title}}</td>
       <td class="mono">${{r.start}}</td><td class="mono">${{r.dur}}</td>
-      <td class="mono">${{r.msgs}}</td><td class="mono">${{r.tools}}</td>
+      <td class="mono"><span class="chip ${{r.src==='codex'?'n':'g'}}">${{r.src}}</span></td><td class="mono">${{r.msgs}}</td><td class="mono">${{r.tools}}</td>
       <td class="mono">${{r.tout}}</td><td class="mono">${{r.ttot}}</td>
       <td class="mono"><span class="t2">${{r.model}}</span></td>`;
     tb.appendChild(tr);

@@ -130,6 +130,20 @@ when several slots are running at once and you want to see where the budget went
 
 Both are plain HTML — no server, no build. They cross-link to each other and back here.
 
+**Keeping them live.** The pages carry a meta-refresh, but that only re-reads the file — it
+does *not* regenerate it. Watch mode is what actually rebuilds:
+
+```bash
+python scripts/session_desk.py --watch 60         # rebuild every 60s
+python scripts/taskdesk.py --org <org> --watch    # every 600s (gh is slow)
+```
+
+**What the session desk can see:** Claude Code and Codex, tagged by source. **Cursor and
+Antigravity are not supported, deliberately** — Cursor's workspaceStorage holds UI state with
+no token accounting, and Antigravity stores protobuf. Neither exposes a transcript that could
+be reported honestly, so the desk does not invent one. The **task desk is tool-independent**:
+it reads GitHub, so it works identically in every editor.
+
 ---
 
 ## What's inside

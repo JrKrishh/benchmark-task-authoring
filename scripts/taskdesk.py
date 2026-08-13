@@ -271,15 +271,31 @@ def main():
     ap.add_argument("--out", default=os.path.join(os.path.dirname(os.path.abspath(__file__)), "taskdesk.html"))
     ap.add_argument("--skill-url", default="https://github.com/JrKrishh/benchmark-task-authoring")
     ap.add_argument("--session-desk", default="session-desk.html")
+    ap.add_argument("--watch", nargs="?", type=int, const=600, metavar="SECONDS",
+                    help="rebuild on a loop (default 600s). The page's meta-refresh only "
+                         "re-reads the file; this is what makes the data actually change.")
     a = ap.parse_args()
     if not a.org:
         sys.exit("error: pass --org <your-task-org> or set BENCH_ORG")
-    t0 = time.time()
-    print("sweeping %s ..." % a.org, file=sys.stderr)
-    rows = sweep(a.org)
-    with open(a.out, "w", encoding="utf-8") as f:
-        f.write(render(rows, a.org, a.skill_url, a.session_desk))
-    print("taskdesk.html: %d slots in %.1fs -> %s" % (len(rows), time.time() - t0, a.out))
+
+    def once():
+        t0 = time.time()
+        print("sweeping %s ..." % a.org, file=sys.stderr)
+        rows = sweep(a.org)
+        with open(a.out, "w", encoding="utf-8") as f:
+            f.write(render(rows, a.org, a.skill_url, a.session_desk))
+        print("taskdesk.html: %d slots in %.1fs -> %s" % (len(rows), time.time() - t0, a.out))
+
+    if a.watch:
+        print("watching: rebuilding every %ds — Ctrl-C to stop" % a.watch)
+        try:
+            while True:
+                once()
+                time.sleep(a.watch)
+        except KeyboardInterrupt:
+            pass
+    else:
+        once()
 
 
 if __name__ == "__main__":

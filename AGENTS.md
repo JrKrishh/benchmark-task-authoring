@@ -360,9 +360,25 @@ It sorts blocked slots first, and its action band names the fix for each.
 day and by project, and a searchable ledger of past sessions. Useful when you are running
 several slots in parallel and want to see where the budget actually went.
 
-Both re-render in about a second (the task desk takes ~30 s the first time because it queries
-`gh` per PR). Neither needs a server — open the HTML file directly. To keep the session desk
-current automatically, run it from a `SessionStart` hook.
+**Keeping them live.** Each page carries a meta-refresh, but that only re-reads the file — it
+does **not** regenerate it, so on its own the refresh shows the same numbers forever. Use
+watch mode, which is what actually rebuilds:
+
+```bash
+python scripts/session_desk.py --watch 60     # rebuild every 60s
+python scripts/taskdesk.py --org <org> --watch # rebuild every 600s (gh is slow)
+```
+
+For Claude Code, a `SessionStart` hook running `session_desk.py --hook` keeps it current
+without a loop.
+
+**Which tools the session desk can see.** Claude Code (full transcripts with per-message
+usage) and Codex (`~/.codex/sessions/**`, rollout files with running token totals). Rows are
+tagged by source. **Cursor and Antigravity are not supported and this is deliberate** —
+Cursor's workspaceStorage holds UI state with no token accounting, and Antigravity stores
+protobuf; neither exposes a transcript that could be reported honestly, so the desk does not
+guess at one. The task desk is tool-independent: it reads GitHub, so it works the same
+everywhere.
 
 ## Honest limits
 
