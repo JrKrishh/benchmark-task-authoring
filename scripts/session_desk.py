@@ -183,7 +183,12 @@ for r in rows:
 top_proj = sorted(pcount.items(), key=lambda kv: -kv[1]["n"])[:10]
 
 def fmt_tok(n):
-    return f"{n/1e6:.1f}M" if n >= 1e6 else (f"{n/1e3:.0f}k" if n >= 1000 else str(n))
+    # Cache-read totals cross a billion quickly; without a B step this renders as
+    # "23477.6M", which is both unreadable and too wide for its tile.
+    if n >= 1e9:  return f"{n/1e9:.1f}B"
+    if n >= 1e6:  return f"{n/1e6:.1f}M"
+    if n >= 1000: return f"{n/1e3:.0f}k"
+    return str(n)
 
 def fmt_dur(sec):
     sec = int(sec)
@@ -267,9 +272,11 @@ page = f"""<meta charset="utf-8">
             border:1px solid var(--line);border-radius:5px;padding:4px 10px;white-space:nowrap}}
   .desklink:hover{{border-color:var(--accent)}}
   .desklink:focus-visible{{outline:2px solid var(--accent);outline-offset:2px}}
+  .links{{display:flex;gap:8px;margin-left:auto}}
+  .tiles{{--tile-min:150px}}
   h2{{font:600 12px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:34px 0 12px;display:flex;align-items:center;gap:10px}}
   h2::after{{content:"";flex:1;height:1px;background:var(--line)}}
-  .tiles{{display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:10px;margin-top:22px}}
+  .tiles{{display:grid;grid-template-columns:repeat(auto-fit,minmax(var(--tile-min),1fr));gap:10px;margin-top:22px}}
   .tile{{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:12px 14px 10px}}
   .tile b{{display:block;font:600 26px/1.1 var(--mono);font-variant-numeric:tabular-nums}}
   .tile span{{font-size:11.5px;color:var(--muted)}}
