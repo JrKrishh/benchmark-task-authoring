@@ -17,7 +17,7 @@ Download **[`dynamo-task-authoring.skill`](dynamo-task-authoring.skill)** and cl
 Or clone straight into your skills directory:
 
 ```bash
-git clone https://github.com/<owner>/dynamo-task-authoring.git ~/.claude/skills/dynamo-task-authoring
+git clone https://github.com/JrKrishh/dynamo-task-authoring.git ~/.claude/skills/dynamo-task-authoring
 ```
 
 After that it triggers on its own. You do not need to invoke it by name — saying things like
