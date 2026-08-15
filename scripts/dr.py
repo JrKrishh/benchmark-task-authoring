@@ -61,6 +61,10 @@ SOURCES = [
     # (glob-root, pattern, doc_class, weight)
     (os.path.join(SKILL, "references"), r"^hardness-laws\.md$", "law", 1.45),
     (os.path.join(SKILL, "references", "rules"), r"\.md$", "rule", 1.35),
+    # Per-category briefs: the synthesis across every measured slot in one
+    # category, with its n stated. Ranked above narrative, below the law deck.
+    (os.path.join(SKILL, "references"), r"^category-.*\.md$", "brief", 1.25),
+    (os.path.join(SKILL, "references"), r"^ci-stages\.md$", "reference", 1.20),
     (os.path.join(SKILL, "references"), r"^claiming\.md$", "reference", 1.15),
     (SKILL, r"^SKILL\.md$", "rule", 1.30),
     (os.path.join(SKILL, "assets"), r"\.md$", "reference", 1.10),
@@ -70,8 +74,7 @@ if MEM:
         # Any note whose filename ends -law.md is treated as a distilled, transferable
         # law rather than the narrative that produced it, and ranked above war-chests.
         # Match order matters: this must precede the generic pattern below.
-        (MEM, r"^the program-.*-law\.md$", "law", 1.38),
-        (MEM, r"^the program-.*\.md$", "warchest", 1.00),
+        (MEM, r"-law\.md$", "law", 1.38),
         (MEM, r"\.md$", "warchest", 0.95),
     ]
 if HACK != SKILL:
