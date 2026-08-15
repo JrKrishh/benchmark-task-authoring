@@ -171,7 +171,7 @@ it reads GitHub, so it works identically in every editor.
 ## Two free wins
 
 **The rubric self-grade costs nothing.** All 31 review criteria ship in *your own task repo*
-at `references/dynamo-rubric.toml`, with full guidance text — no API key, no `harbor check`.
+at `references/*-rubric.toml`, with full guidance text — no API key, no `harbor check`.
 Grade yourself as an explicit PASS / FAIL / NA table before every push. `review` gates
 everything downstream, and **every rubric failure in this corpus landed in one of four graded
 prose fields.**

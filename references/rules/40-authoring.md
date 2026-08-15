@@ -56,8 +56,8 @@ it right and the build is derisked.
 
 ## Rubric alignment
 
-Grade any draft against `<task-repo>/dynamo-rubric.toml`. The criteria
-that most often bite:
+Grade any draft against the rubric TOML that ships in your own task repo
+(`<task-repo>/references/*-rubric.toml`). The criteria that most often bite:
 
 - `code_dependent` — the Pen & Paper test: not solvable conceptually in an
   afternoon; must require genuine multi-step environment interaction.

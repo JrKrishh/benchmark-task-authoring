@@ -161,7 +161,7 @@ roughly ≤0.25 s per instance so the disclosed per-item cap is ~100× and
 ## The rubric self-grade — free, and the single highest-value pre-push step
 
 `harbor check` needs an API key. **You do not need one.** The full rubric ships in every task
-repo at `<your-task-repo>/dynamo-rubric.toml` (not in this skill) — roughly 41 KB, every criterion with a complete
+repo at `<your-task-repo>/references/*-rubric.toml` (not in this skill) — roughly 41 KB, every criterion with a complete
 `description` *and* `guidance` block. Reading it and grading yourself costs nothing.
 
 Do it as an explicit **per-criterion table: PASS / FAIL / NA plus a one-line reason** — not a

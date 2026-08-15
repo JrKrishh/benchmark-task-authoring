@@ -186,7 +186,7 @@ So the fastest route to a cleared slot is not a better task — it is **one push
 17 stages**. Three habits get you there:
 
 - **Run the free rubric self-grade before every push.** All 31 criteria ship in your own repo
-  at `<your-task-repo>/dynamo-rubric.toml` — **not** in this skill, with full guidance text. No API key needed. Grade
+  at `<your-task-repo>/references/*-rubric.toml` — **not** in this skill, with full guidance text. No API key needed. Grade
   yourself as an explicit PASS/FAIL/NA table with a one-line reason per criterion — every
   rubric failure in this corpus landed in one of the four graded prose fields.
 - **Check the four blockers preflight does not catch** — they are listed with their fixes in
