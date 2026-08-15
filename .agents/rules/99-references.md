@@ -11,7 +11,7 @@ classes, lives in these files — read the one the situation calls for rather th
 | File | Load it when |
 |---|---|
 | `references/hardness-laws.md` | Designing or red-teaming a task shape; diagnosing a result. ~35k tokens — use its table of contents, or query it with `scripts/dr.py` |
-| `references/category-math-formal-reasoning.md` | Your slot is Mathematics & Formal Reasoning. Both slots ever assigned there cleared; the brief names the disclosure band and the two ways timeouts kill you |
+| `references/category-*.md` | **Check first.** A brief for your category: its measured record, the shapes already killed there, and a pre-build checklist. Currently Mathematics & Formal Reasoning, and Model Training & ML Infrastructure |
 | `references/ci-stages.md` | Before any push, and whenever a review stage fails. All 17 stages, the four blockers a preflight misses, the ordered local pipeline |
 | `references/claiming.md` | Claiming a slot |
 | `assets/proposal-template.md` | Writing the proposal — it is a graded artifact with a strict format |
