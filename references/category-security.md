@@ -60,16 +60,14 @@ cosine. **Rephrase the graded prose fields every time.**
 ### Advisories are blocks that have not fired yet (Sec-2)
 
 Sec-2 took **seven CI runs, and only the first was about difficulty.** Three of the four
-post-difficulty blockers were **advisories that an earlier run had graded PASS** — non-blocking
-notes that later became hard failures.
+post-difficulty blockers were **advisories that an earlier run had graded PASS**. That result
+is now a cross-cutting law with the full run-by-run table, the AVA loose/strict oscillation and
+its fixed point: **§8.8**. Read it before your second push in any category.
 
-> **Treat every advisory as a block with a delay.** Fix it the run you see it, not the run it
-> stops you.
-
-It also carries the **AVA loose/strict oscillation**: `sound_verifier` complains the verifier is
-too loose, you tighten it, then `no_false_rejection` complains it is too strict. The fixed point
-is *enforce strict AND state the strictness in the spec* — the pair only stabilises when the
-spec and the verifier agree at the strict end.
+What is category-specific is *why it landed here*: forensics tasks carry provenance and custody
+claims, which is exactly the surface AVA audits in both directions — so this category generates
+more `sound_verifier` / `no_false_rejection` traffic than most. Expect to spend runs on verifier
+strictness rather than on difficulty.
 
 ### Dead coverage: rule coverage is not instance coverage (Sec-3)
 

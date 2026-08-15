@@ -22,8 +22,8 @@ diagnosing: the diagnosis lives near the end.
 | 5 | [Beliefs: What Can Actually Carry Gate Load](#5-beliefs-what-can-actually-carry-gate-load) | Designing the wrong belief your task punishes |
 | 6 | [Instance Selection](#6-instance-selection) | Choosing which instances ship in the sealed set |
 | 7 | [Time: Caps, Clocks, and Classification](#7-time-caps-clocks-and-classification) | Setting timeouts; diagnosing timeout-blocked results |
-| 8 | [Verifier and QC](#8-verifier-and-qc) | Writing or auditing the verifier |
-| 9 | [Measurement Epistemics: What Evidence Is Worth](#9-measurement-epistemics-what-evidence-is-worth) | **Diagnosing a result — start at §9.2 "What a 2/2 block means"**, then §9.1 for the evidence asymmetry and §9.3 for the stop conditions. Also: deciding whether any measurement justifies a decision |
+| 8 | [Verifier and QC](#8-verifier-and-qc) | Writing or auditing the verifier — and **§8.8 before every push after the first**, because an advisory you left is the next run's blocker |
+| 9 | [Measurement Epistemics: What Evidence Is Worth](#9-measurement-epistemics-what-evidence-is-worth) | **Diagnosing a result — start at §9.2 "What a 2/2 block means"**, then §9.1 for the evidence asymmetry, §9.3 for the stop conditions, and **§9.6 before you build another core** — one measured 2/2 was a mis-calibrated percentile, not a dead shape. Also: deciding whether any measurement justifies a decision |
 | 10 | [The Pre-Push Checklist](#10-the-pre-push-checklist) | Immediately before the one push |
 
 ---
@@ -293,6 +293,19 @@ The two directions do not cancel. Kill rate is a necessary screen (an inert arch
 
 **You can force a WALK, you cannot force a MARGIN** (design-kill, LowLevel-1): move-attached divergence can be forced onto every legal path by generator construction; resource-level divergence cannot — a wrong belief about spending headroom is either avoidable or loud. Measured: the margin family died at BOTH tightness settings (slack: 17% median kill; knife-edge: 39%, ≥ 90% on only 2.6% of candidates) while the walk family reached candidates confirmed at ≥ 98% joint kill. In an open plan space, divergence sites are avoidable — kill must be forced by construction, and a belief that blocks the agent's own search (26/40 self-blocked) is worthless.
 
+### 5.6 The archetype-faithfulness law — a wrong belief must reach every site that reads it
+
+**A wrong-belief archetype is a WHOLE planner, not a patched predicate. The belief has to be threaded through every site that consumes it — the engine, the derived deadlines, the candidate ORDER, and the self-replay. Patch the engine alone and you measure a planner that half-holds the belief, which is neither the wrong reading nor the right one — it exists nowhere, and its kill rate describes no agent.**
+
+Measured-gate, Games-2, which cleared 0/5 · 5 good-valid-fails · avg@5 0.000 with all 14 stages green on one push. The law came out of finding the same defect **twice in one build**, both times in the same direction — both inflated the archetype's *survival*, i.e. made the task look easier than it was. That is the safe direction, but only because they were caught:
+
+1. **Tie-break order is part of the belief's semantics.** The candidate list appended the sheltered delivery before the exposed one, and the sort is **stable** — so when the patched instant collapsed to 0 the two estimates *tied* and the stable sort handed the archetype the safe choice. The belief could not express itself at all. Fix: emit the exposed candidate first (truth is unaffected — its estimate is strictly earlier whenever a sweep threatens). That one change took the archetype from passing to failing with two goals swept.
+2. **A derived quantity inherited from truth silently repairs the belief.** A second archetype inherited *truth's* pickup deadline while believing effects land at the start of a tick — so it was **more cautious than its own belief required**, and lost an entire designed kill.
+
+Second confirmation (measured-gate, DataQuery-1): three archetypes rewritten as full planners and run over 480 reports bit 760 times and produced **zero wrong numbers** — the belief was inert under summation (§5.4), which is a finding you simply cannot obtain from a patched predicate, because a patched predicate never gets far enough to roll up.
+
+**The operational test, before you trust any battery number:** list every site in your archetype that reads the belief — the simulator, each derived bound, the ordering or tie-break, and the replay that checks its own work. If the belief is absent from any of them, the archetype is not the wrong reading and its rate is not evidence. This is what §5.5's "the battery outranks your judgment" depends on: an unfaithful battery outranks nothing.
+
 ---
 
 ## 6. Instance Selection
@@ -449,6 +462,32 @@ Self-grade all 31 criteria against `<your-task-repo>/references/*-rubric.toml` (
 
 **The proposal artifact** (prospective — format never gate-measured itself; the load-bearing claim is that `difficulty_explanation_quality` fails results-based framing): the platform proposal is a header line "Category: X  Sub-Category: Y" plus exactly four bold-numbered sections in dense prose — why genuinely difficult (three italic-led paragraphs: the professional, the data, the pitfalls); intended solution approach (key insight first, expert effort in hours); verification (calibration of every tolerance or why exactness is the calibration, anti-cheat, what discriminates correct from plausible-wrong, cross-validation); category/sub-category with task_objective + artifact_type. No tables, no checklists, no scaffolding — and zero internal shorthand: grep the draft for pass@, hashes, "probe-dead", "archetype", "kill-list" and strip them; the design record (dead alternatives, red-team tables, numeric bars) lives in a separate file. At the proposal gate, the verdict you want from the approach probe is "approach found but NOT confident of first-pass implementation."
 
+### 8.8 A non-blocking advisory is a block that has not fired yet
+
+**Clear every advisory before the next push, not just the blocker.** Measured-gate, Sec-2: **seven CI runs to clear one task, and only the first block was about difficulty.** Three of the four later blockers were things an earlier run had already printed as a non-blocking advisory and graded PASS.
+
+| run | blocked at | flagged earlier? |
+|---|---|---|
+| 1 | `pass2` 2/2 too easy | — (a real difficulty result) |
+| 2 | `qc_gate` — an emitted field was never checked | **yes** — `deep_review` advisory, *same run* |
+| 3 | `review` — `difficulty_explanation` omitted data provenance | **yes** — eval advisory, on run **1** |
+| 4 | `ava_review` `sound_verifier` — byte-equal citations accepted | **yes** — AVA advisory, on run **3** |
+| 5 | `ava_review` `no_false_rejection` — the run-4 fix over-enforced | new; see the oscillation below |
+| 6 | *(none)* | all stages green, `accepted` |
+
+The mechanism is §8.7's re-roll seen from the other side: the LLM-graded stages are **non-deterministic**, so identical text that scores PASS-with-advisory today scores FAIL tomorrow. Run 3's `review` FAIL landed on prose that had already passed `review` twice. **An advisory is the grader telling you where its next roll may land.** And because an early-stage block skips every downstream stage, a one-sentence prose gap cost a full `pass2` + `qc_*` + `tier1` + `trials` cycle — roughly 3 hours.
+
+**The AVA loose/strict oscillation, and its fixed point.** AVA audits the verifier against the spec in **both** directions, so a naive fix flips you straight to the opposite block:
+
+- `sound_verifier` — the verifier ACCEPTS something the spec forbids (too loose).
+- `no_false_rejection` — the verifier REJECTS something the spec permits (too strict).
+
+On Sec-2, run 4 blocked because provenance citations were accepted on byte equality alone; the fix required the true origin; run 5 then blocked because the format document promised only re-execution, so the verifier was now enforcing more than the stated contract. Relaxing the check would have flipped straight back to run 4's block.
+
+> **The fixed point is: enforce the strict reading AND state it in the spec.** This extends §8.3, whose standing advice ("fix the verifier and the reference") is incomplete — when the strict reading is the *correct* one, the thing to fix is the **spec**, so the stated contract matches what is enforced.
+
+**Measure your rationale before defending it.** On run 4 the author had *argued* that loose acceptance protected legitimate alternative citations. Testing the claim took one 20-line script and reversed it: **7,740 bytes across six sealed images, zero with a second valid source** — the duplication was an aspiration from the v1 proposal that the generator never actually produced. When a reviewer's finding contradicts your design rationale, the rationale is the cheaper thing to measure.
+
 ---
 
 ## 9. Measurement Epistemics: What Evidence Is Worth
@@ -506,6 +545,21 @@ On early-signal evidence alone, fix **packaging, static stages, ava_review, rubr
 
 **Similarity** (measured-gate): same-author printed-optimum tasks collide on cosine_similarity (block at ≥ 0.9 on Instruction + Verifier). What works is loud surface differentiation with the semantic core untouched — different domain vocabulary, different state objects, no shared mechanics (one task passed as the *eleventh* same-author submission; measured passing scores 0.63–0.80). Because renames touch the graded surface, **rename late, then re-run every battery** (one slot re-ran its full three-way fuzz, +346 verdict trios, after renames). Counter-case on record: one slot was blocked at cosine_similarity self-match and abandoned. The shape's real expiry is similarity, not difficulty.
 
+### 9.6 The pass@2 suggestion is a diagnostic instrument, not a verdict — spend it early
+
+**Measured-gate, ETL-3.** Four semantic cores were built for this slot: v1 killed on paper, **v2 pass@5 3/5**, **v3 pass@2 2/2**, **v4 pass@2 2/2**. What finally cleared it — 0/5 solved · 5 good-valid-fails · avg@5 0.000, all 17 stages green in one run — was not a fifth core. It was **the platform's own pass@2 difficulty suggestion**, which located the defect *from the task's own `task.toml` disclosure*, and the defect was **one mis-calibrated percentile**:
+
+> Running-total thresholds sat at the 0.50–0.60 percentile of cohort totals, so most cohorts crossed only near their last reading — collapsing *release at settlement* onto *release when the last figure is finished*, which left the intended rule unable to change any cell count.
+
+Measured: at the 0.55 percentile **26%** of cohorts settle early; at 0.08–0.18, **68%**. Moving the thresholds took the intended carrier from **1/11 to 10/11**, and a second suggestion (three template variants instead of one fixed role assignment, so the decomposition cannot be recovered once from the public sample and reapplied) closed the rest.
+
+Two things follow, and the second is the expensive one:
+
+1. **Spend the suggestion early.** It is free, capped at 2/day (UTC reset), and here it diagnosed in one shot what four design iterations missed. Treating it as a consolation prize attached to a failed run wastes the cheapest diagnostic in the pipeline.
+2. **Read your own disclosure adversarially before building another core.** The author had written *"measured near-inert on the shipped set, failing one, none and none of the eleven"* into `task.toml` — and then spent two CI cycles on new semantics instead of fixing the inert carrier that sentence names. The platform read that sentence and found it immediately. Before you conclude a design is dead, re-read what you told the grader about it: a 2/2 is sometimes a calibration failure your own prose already confessed to, not a dead shape.
+
+This is the calibration sibling of §9.2's four repairs — closest to the data-only rebuild, but cheaper still, because the parameter is one you already have and the instrument that finds it is free.
+
 ---
 
 ## 10. The Pre-Push Checklist
@@ -546,7 +600,9 @@ Verifier and packaging:
 
 Measurement:
 
-23. Run the local probe; a probe KILL is a warning, not a verdict — a probe SOLVE is the belief-rate alarm.
-24. pass@2: 0/2 → pass@5. 1/2 → one tightening pass, once. 2/2 → stop; the fix is structural. Read difficulty_crux and low_timeout per trial before concluding anything.
-25. Budget ≥ 4 countable fails (one trial in five is lost to nothing). Never harden toward search after a timeout; never touch the 3600 s cap.
-26. Once green: do not push again. Ever.
+23. Every archetype is a whole planner — the belief reaches the engine, each derived bound, the tie-break order and the self-replay (§5.6). An unfaithful battery's rates are not evidence.
+24. Run the local probe; a probe KILL is a warning, not a verdict — a probe SOLVE is the belief-rate alarm.
+25. pass@2: 0/2 → pass@5. 1/2 → one tightening pass, once. 2/2 → stop; the fix is structural — but before assuming that, spend the difficulty suggestion and re-read your own `task.toml` disclosure adversarially (§9.6). Read difficulty_crux and low_timeout per trial before concluding anything.
+26. Budget ≥ 4 countable fails (one trial in five is lost to nothing). Never harden toward search after a timeout; never touch the 3600 s cap.
+27. **Every advisory in the review comment is fixed — not just the blocker** — including advisories still open from earlier runs (§8.8). Diff what the verifier ENFORCES against what the spec STATES, in both directions.
+28. Once green: do not push again. Ever.

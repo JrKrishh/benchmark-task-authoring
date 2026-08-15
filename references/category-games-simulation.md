@@ -38,19 +38,17 @@ Two further failures from the same slot:
 
 ## Why Games-2 cleared: an archetype is a whole planner
 
-Games-2 cleared on one push and contributed the **archetype-faithfulness law**, which is now
-the standard for battery construction everywhere:
+Games-2 cleared on one push and contributed the **archetype-faithfulness law** — a wrong belief
+must be threaded through every site that reads it, because an archetype is a whole planner and
+not a patched predicate. It is now the standard for battery construction everywhere, stated with
+both measurements and the operational test at **§5.6**.
 
-> **A wrong belief must be threaded through EVERY site that reads it** — the engine, the derived
-> deadlines, the candidate ORDER, and the self-replay. An archetype is a whole planner, not a
-> patched predicate.
-
-Measured twice on that slot: once where a **stable-sort tie** silently restored correct
-behaviour, and once where an **inherited deadline** did. In both cases the archetype looked
-wrong but behaved right, because one site still held the correct belief.
-
-**Tie-break order is part of an archetype's semantics.** If your wrong-belief planner and your
-reference differ only in a comparator that never fires, you have measured nothing.
+Why it surfaced *here* is the part worth keeping in this brief: a text-adventure archetype is
+unusually likely to hide the defect, because the planner has so many sites that read the belief
+— a simulator, per-goal deadlines, a candidate ordering and a self-replay. Both defects found on
+this slot lived in the sites nobody thinks of as belief-carrying: a **stable-sort tie** and an
+**inherited deadline**. In a category whose tasks are literally about simulated worlds, assume
+your belief is leaking back to truth somewhere and go looking.
 
 Games-2 also carries the **asserted-tractable-leg-first** discipline: build and measure the leg
 you claim is tractable before the leg you claim is hard.

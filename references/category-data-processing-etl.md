@@ -69,13 +69,11 @@ candidate instances stayed minimal** — the rule made the hard instances trivia
 > **Before adding any rule, ask: does this lower demand on the resource my floor counts?**
 > If yes, the rule cancels the floor.
 
-ETL-3 also carries the sharpest self-inflicted lesson in the corpus. What finally cleared it was
-**the platform's own pass@2 suggestion**: one mis-calibrated threshold percentile (0.55 →
-0.08–0.18) took the intended carrier from 1/11 to 10/11. The carrier had been written into
-`task.toml` as the crux all along and was inert at the shipped calibration.
-
-> **Read your own `task.toml` disclosure adversarially before building another core.** Two
-> cycles were spent inventing new semantics when the named carrier was simply mis-tuned.
+ETL-3 also carries the sharpest self-inflicted lesson in the corpus: after four cores, what
+cleared it was **the platform's own pass@2 suggestion** finding one mis-calibrated percentile —
+the carrier had been named in `task.toml` all along and was inert at the shipped calibration.
+Full numbers and the two rules it produced are at **§9.6**; read that before you conclude a 2/2
+means your shape is dead.
 
 ---
 
