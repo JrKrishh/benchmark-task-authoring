@@ -101,7 +101,7 @@ classes, lives in these files — read the one the situation calls for rather th
 | File | Load it when |
 |---|---|
 | `references/hardness-laws.md` | Designing or red-teaming a task shape; diagnosing a result. ~35k tokens — use its table of contents, or query it with `scripts/dr.py` |
-| `references/category-*.md` | **Check first.** A brief for your category: its measured record, the shapes already killed there, and a pre-build checklist. Currently Mathematics & Formal Reasoning, and Model Training & ML Infrastructure |
+| `references/category-*.md` | **Check first.** A brief for your category: its measured record, the shapes already killed there, and a pre-build checklist. All 16 categories are covered across 13 files — the four thinnest share `category-thin-evidence.md` |
 | `references/ci-stages.md` | Before any push, and whenever a review stage fails. All 17 stages, the four blockers a preflight misses, the ordered local pipeline |
 | `references/claiming.md` | Claiming a slot |
 | `assets/proposal-template.md` | Writing the proposal — it is a graded artifact with a strict format |

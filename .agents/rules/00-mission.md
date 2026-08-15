@@ -37,10 +37,22 @@ Kill rates, restart-proof results, probe solves, pass@ numbers, oracle/nop rewar
 say it wasn't. Never write a calibration number into a proposal or `task.toml`
 that you did not observe.
 
+## Read your category brief before you design anything
+
+`references/category-<your-category>.md` is that category's measured record: what
+cleared, what died, the shapes already killed there, and a pre-build checklist.
+All 16 categories are covered across 13 files — the four with the thinnest
+evidence share `category-thin-evidence.md`. Each brief states its own `n`; one
+built on a single slot says so.
+
+This is the cheapest step in the whole process and it is routinely the one that
+saves a redesign. Read it before `20-design-doctrine.md`, not after.
+
 ## Phase map
 
-Scope → design (`20-design-doctrine.md`) → prove hard (`10-hardness-gate.md`) →
-build (`30-harbor-format.md`, `50-verifier.md`) → author prose (human, guided by
+Read the category brief (`category-*.md`) → scope → design
+(`20-design-doctrine.md`) → prove hard (`10-hardness-gate.md`) → build
+(`30-harbor-format.md`, `50-verifier.md`) → author prose (human, guided by
 `40-authoring.md`) → validate → submit and iterate (`60-pipeline.md`).
 
 ## Hygiene

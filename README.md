@@ -77,13 +77,14 @@ sources, re-run `port.py`.
 | | | |
 |---|---|---|
 | **1** | Read *The one law* + the kill-list in `SKILL.md` | 5 min |
-| **2** | Set up retrieval — stop re-reading a 35k-token manual | 1 min |
-| **3** | Put a board up — see which stage each slot is stuck at | 1 min |
-| **4** | Read `references/ci-stages.md` before your first push | 8 min |
+| **2** | Read the brief for your category — `references/category-*.md` | 6 min |
+| **3** | Set up retrieval — stop re-reading a 35k-token manual | 1 min |
+| **4** | Put a board up — see which stage each slot is stuck at | 1 min |
+| **5** | Read `references/ci-stages.md` before your first push | 8 min |
 
 ```bash
-python scripts/dr.py index --no-embed          # 2 · index this skill
-python scripts/taskdesk.py --org <your-org>    # 3 · your board, stage by stage
+python scripts/dr.py index --no-embed          # 3 · index this skill
+python scripts/taskdesk.py --org <your-org>    # 4 · your board, stage by stage
 ```
 
 ---
@@ -152,6 +153,7 @@ it reads GitHub, so it works identically in every editor.
 |---|---|
 | **`SKILL.md`** | The one law, the 13-shape kill-list, the workflow, routing to everything else — **the source of truth** |
 | `AGENTS.md` · `.cursor/rules/` · `.agents/rules/` | Generated entry points for Codex, Cursor and Antigravity (`scripts/port.py`) |
+| **`references/category-*.md`** | **Start here.** One brief per category — what cleared, what died, the shapes already killed there, and a pre-build checklist. All 16 categories across 13 files; each states its own `n` |
 | **`references/hardness-laws.md`** | The field manual — every law with its numbers and evidence class |
 | **`references/ci-stages.md`** | All 17 review stages, the four blockers preflight misses, the ordered local pipeline |
 | `references/retrieval.md` | Index once, query for ~1k tokens instead of ~35k |
