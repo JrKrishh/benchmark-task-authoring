@@ -49,81 +49,9 @@ Clone into your workspace. Antigravity reads **`.agents/rules/*.md`** as workspa
 git clone https://github.com/Xclaw-bot/benchmark-task-authoring.git
 ```
 
-<details>
-<summary><b>Or hand the whole setup to your agent — one prompt, any of the four tools</b></summary>
-
-Paste this into Claude Code, Codex, Cursor or Antigravity. It detects which tool it is in,
-installs the right way for that tool, proves the install rather than assuming it, and stops
-if anything fails.
-
-```text
-Set up the benchmark-task-authoring skill for me, end to end, and verify it actually works.
-
-CONTEXT
-I write Terminal-Bench 2 / Harbor benchmark tasks. The hard part is the difficulty gate —
-tasks come back "too easy" and every CI run costs hours. This skill is a field manual of
-measured laws from ~30 completed slots, a kill-list of task shapes already known dead, a
-map of all 17 review stages, and one brief per category.
-
-Repo: https://github.com/Xclaw-bot/benchmark-task-authoring
-Requires: git, python 3.11+
-
-DO THIS, IN ORDER
-
-1. Say which coding tool you are running in before you start, then install for THAT tool
-   only — not all four:
-     Claude Code   git clone <repo> ~/.claude/skills/benchmark-task-authoring
-                   (Windows: %USERPROFILE%\.claude\skills\benchmark-task-authoring)
-     Codex         clone into my project — AGENTS.md at the repo root is read automatically
-     Cursor        clone into my project — .cursor/rules/*.mdc auto-attach by glob
-     Antigravity   clone into my workspace — .agents/rules/*.md are the workspace rules
-   If you genuinely cannot tell which tool you are, ask me once, then continue.
-
-2. Verify the clone rather than assuming it. All of these must exist:
-   SKILL.md, AGENTS.md, references/hardness-laws.md, references/ci-stages.md,
-   assets/, scripts/, .cursor/rules/, .agents/rules/
-   Then count the category briefs — `references/category-*.md` must return exactly 13
-   files. Print the count. If anything is missing or the count is wrong, stop and tell me.
-
-3. Set up local retrieval so neither of us re-reads a 35k-token manual to answer one
-   question:
-     python scripts/dr.py index --no-embed
-   Then PROVE it works by running a real query and pasting the output:
-     python scripts/dr.py ask "what makes a benchmark task too easy"
-   If python is missing, the index fails, or the query returns nothing, tell me exactly
-   what failed. Do not silently work around it.
-
-4. These environment variables are optional. Ask me before setting anything permanent:
-     BENCH_WORK  my working dir (proposals, design records) — retrieval will index it too
-     BENCH_MEM   my own notes dir — same
-     BENCH_ORG   my task-repo GitHub org, so `python scripts/taskdesk.py` needs no flag
-
-5. Now read SKILL.md yourself — "The one law" and the kill-list — and tell me, in under
-   200 words total:
-     - the one law, in a single sentence
-     - the three kill-list shapes most likely to bite a first task
-     - which category brief I should read first (ask me my category if you need it)
-   I will read the manual myself. This step is so I know you actually loaded it.
-
-6. From references/ci-stages.md, tell me the single highest-value thing to do before my
-   first push, and what it costs. Name the command if there is one.
-
-RULES
-- Verify by running. A file existing is not proof a step worked — run the thing and show
-  me the output.
-- Do not touch any of my files outside the clone target without asking first.
-- Do not create a task, a proposal, a task.toml or a verifier. This is setup only.
-- If a step fails, name the step and stop. A half-installed skill that reports success is
-  worse than no skill.
-
-ONE THING TO CONFIRM AT THE END
-I never invoke this skill by name. It is supposed to fire on its own when I say things
-like "agents keep solving my task", "my PR checks are failing", "pass@5 came back 3/5",
-"how do I make this harder", or "ava_review failed". Confirm you have it loaded and will
-recognise those, then stop.
-```
-
-</details>
+> **Or hand the whole setup to your agent — [one prompt, any of the four tools](SETUP-PROMPT.md).**
+> Paste it in and it detects your tool, installs only for that one, proves each step by running
+> it, and stops if anything fails.
 
 **You never invoke it by name.** It fires on its own the moment you say something it
 recognises:
@@ -227,6 +155,7 @@ it reads GitHub, so it works identically in every editor.
 
 | Path | What it is |
 |---|---|
+| [**`SETUP-PROMPT.md`**](SETUP-PROMPT.md) | One prompt to paste into any of the four tools — it installs, verifies by running, and stops on failure |
 | **`SKILL.md`** | The one law, the 13-shape kill-list, the workflow, routing to everything else — **the source of truth** |
 | `AGENTS.md` · `.cursor/rules/` · `.agents/rules/` | Generated entry points for Codex, Cursor and Antigravity (`scripts/port.py`) |
 | **`references/category-*.md`** | **Start here.** One brief per category — what cleared, what died, the shapes already killed there, and a pre-build checklist. All 16 categories across 13 files; each states its own `n` |
